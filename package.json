@@ -1,0 +1,21 @@
+{
+  "name": "pin-pad-node",
+  "version": "1.0.0",
+  "description": "123",
+  "main": "main.js",
+  "scripts": {
+    "test": "npm test",
+    "dev": "node main.js"
+  },
+  "keywords": [
+    "qwerty"
+  ],
+  "author": "alexey2baranov",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "pg": "^6.1.2",
+    "pg-promise": "^5.5.1",
+    "shelljs": "^0.7.6"
+  }
+}

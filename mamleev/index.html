@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Arcus2</title>
+    <script src="jquery.min.js"></script>
+<script>
+	$(function(){
+		$("#form").submit(function(){
+			$('#text').empty();
+			$.post("http:\\localhost:8080", $(this).serialize(),function(data) {
+				  $('#text').html(data);
+					});
+			return false;
+		});
+	});
+	</script>
+</head>
+<body>
+	<form id="form" action="" method="POST">
+		Сумма: <input type="text" name="amount">
+		<select name="operation">
+			<option selected value="1">Оплата</option>
+			<option value="2">Отмена последней</option>
+			<option value="3">Возврат</option>
+			<option value="7">Полный журнал</option>
+			<option value="8">Краткий журнал</option>
+			<option value="10">Сверка итогов</option>
+		</select>
+		<input type="submit" value="Старт">
+	</form>
+	<div id="text"></div>
+</body>
+</html>
