@@ -7,11 +7,12 @@
 let express = require('express')
 require('shelljs/global')
 let pgp = require('pg-promise')()
-let fs = require("fs")
+let fs = require("fs"),
+  iconv = require('iconv-lite')
   // ,  exec = require('child_process').execFile
 
 const
-  port = 3000
+port = 3000
 const commandLineToolPath = __dirname + "/arcus2"
 
 let NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : "development"
@@ -51,9 +52,9 @@ app.get('/ping', function (req, res) {
 app.get('/', function (req, res) {
   // let code = exec('sbcall 4000 200 1 1', {cwd: commandLineToolPath, encoding: "win1251"}).code
   // throw new Error("Я синхронная ошибка")
-/*  new Promise(function(){
-    throw new Error("rejection")
-  })*/
+  /*  new Promise(function(){
+   throw new Error("rejection")
+   })*/
   // if (code) {
   //   throw new Error(code)
   // }
@@ -98,7 +99,7 @@ app.get('/', function (req, res) {
       throw new Error('Неверный тип операции: ' + query.operation)
   }
 
-  let cmd= __dirname + '/arcus2/commandlinetool/bin/commandlinetool.exe '+params
+  let cmd = __dirname + '../arcus2/commandlinetool/bin/commandlinetool.exe ' + params
   let result = exec(cmd, {
     /*cwd: commandLineToolPath,*/
     encoding: "win1251"
@@ -107,20 +108,24 @@ app.get('/', function (req, res) {
   if (result.code) {
     throw new Error(`"Терминал закрылся с ошибкой ${cmd}. Код: ${result.code}, stdout: ${result.stdout}`)
   }
-  // exec(__dirname + '/arcus2/commandlinetool/bin/commandlinetool.exe', [params], function () {
+  // exec(__dirname + '/arcus2/commandlinetool/bin/commandlinetool.exe', [params], function () {})
   console.log('Чтение файла ответа...')
   let cheq = fs.readFileSync(__dirname + "/arcus2/cheq.out")
-  // cheq = iconv.decode(new Buffer(cheq), 'win1251')
+  cheq = iconv.decode(cheq, 'win1251')
   console.log('Ответ:', cheq)
-  response.send({status: "success", cheq})
-  // })
 
-  db.none("insert into payment(sum) values($[sum])", {sum: req.query.sum})
-    .then(() => {
-      // throw new Error("Я асинхронная ошибка")
-      console.log("статусю 200 и выхожу с успехом")
-      res.status(200).json({status: "success"})
-    })
+  if (+query.operation==1) {
+    db.none("insert into payment(sum) values($[sum])", {sum: req.query.sum})
+      .then(() => {
+        // throw new Error("Я асинхронная ошибка")
+        console.log("статусю 200 и выхожу с успехом")
+        res.status(200).json({status: "success", cheq: cheq.toString()})
+      })
+  }
+  else{
+    console.log("статусю 200 и выхожу с успехом")
+    res.status(200).json({status: "success", cheq: cheq.toString()})
+  }
 })
 
 
